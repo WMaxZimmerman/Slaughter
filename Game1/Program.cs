@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Slaughter
+namespace Game1
 {
     /// <summary>
     /// The main class.
