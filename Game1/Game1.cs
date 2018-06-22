@@ -21,7 +21,6 @@ namespace Game1
         Texture2D Ghost2;
         Texture2D Ghost3;
         Texture2D Ghost4;
-        //Texture2D Missle;
 
         SpriteFont Banner;
         string Ban;
@@ -65,7 +64,7 @@ namespace Game1
         Vector2 StoryMenuPosition = Vector2.Zero;
         Vector2 BannerPosition = Vector2.Zero;
 
-        GameObject _playerGameObject;
+        PlayerShip _playerGameObject;
         private GameObject playerMissle;
         private List<GameObject> alienShips;
         private List<GameObject> wallsObjects;
@@ -144,7 +143,7 @@ namespace Game1
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _playerGameObject = new GameObject(Content.Load<Texture2D>("Player_Ship"), new Vector2(360, 388));
+            _playerGameObject = new PlayerShip(Content.Load<Texture2D>("Player_Ship"), new Vector2(360, 388), 100, 100);
             playerMissle = new GameObject(Content.Load<Texture2D>("Missle"), new Vector2(390, 388));
 
             alienShips = new List<GameObject>
@@ -360,8 +359,8 @@ namespace Game1
             Game_State = 2;
             Game_level = 0;
             Time++;
-
-            MovePlayerShipLeftAndRight(gameTime);
+            
+            _playerGameObject.Update(gameTime, ref Game_Start);
 
             BulletDeployment();
 
@@ -379,63 +378,7 @@ namespace Game1
 
             CheckForWin();
         }
-
-        private void MovePlayerShipLeftAndRight(GameTime gameTime)
-        {
-            Move = Keyboard.GetState();
-            if (Move.IsKeyDown(Keys.Left))
-            {
-                Game_Start = 1;
-                _playerGameObject.Position.X = _playerGameObject.Position.X - Player_Velocity;
-                Player_Rec = new Rectangle((currentFrame * spriteWidth) - 100, 0, spriteWidth, spriteHeight);
-
-                //Increase the timer by the number of milliseconds since update was last called
-                timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-
-                //Check the timer is more than the chosen interval
-                if (timer > interval)
-                {
-                    //Show the next frame
-                    currentFrame++;
-                    //Reset the timer
-                    timer = 0f;
-                }
-                //If we are on the last frame, reset back to the one before the first frame (because currentFrame++ is called next so the next frame will be 1!)
-                if (currentFrame < 2 || currentFrame > 4)
-                {
-                    currentFrame = 2;
-                }
-            }
-            else if (Move.IsKeyDown(Keys.Right))
-            {
-                Game_Start = 1;
-                _playerGameObject.Position.X = _playerGameObject.Position.X + Player_Velocity;
-                Player_Rec = new Rectangle((currentFrame * spriteWidth) - 100, 0, spriteWidth, spriteHeight);
-
-                //Increase the timer by the number of milliseconds since update was last called
-                timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-
-                //Check the timer is more than the chosen interval
-                if (timer > interval)
-                {
-                    //Show the next frame
-                    currentFrame--;
-                    //Reset the timer
-                    timer = 0f;
-                }
-                //If we are on the last frame, reset back to the one before the first frame (because currentFrame++ is called next so the next frame will be 1!)
-                if (currentFrame < 5)
-                {
-                    currentFrame = 7;
-                }
-            }
-            else
-            {
-                Player_Rec = new Rectangle((currentFrame * spriteWidth) - 100, 0, spriteWidth, spriteHeight);
-                currentFrame = 1;
-            }
-        }
-
+        
         private void BulletDeployment()
         {
             Shoot = Keyboard.GetState();
@@ -1051,7 +994,7 @@ namespace Game1
             {
                 playerMissle.Draw(spriteBatch);
             }
-            spriteBatch.Draw(_playerGameObject.Texture, _playerGameObject.Position, Player_Rec, Color.White);
+            _playerGameObject.Draw(spriteBatch);
             if (Level_H >= 3)
             {
                 if (A1Missle_H == 0)

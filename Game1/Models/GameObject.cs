@@ -35,7 +35,12 @@ namespace Game1.Models
             return thisRect.Intersects(objRect);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public virtual void Update(GameTime gameTime, ref int gameStart)
+        {
+            //Can Be Overriden to do stuff.
+        }
+
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, Position, Color.White);
         }

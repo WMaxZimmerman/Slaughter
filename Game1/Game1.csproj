@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="Game1.cs" />
     <Compile Include="Models\GameObject.cs" />
+    <Compile Include="Models\PlayerShip.cs" />
+    <Compile Include="Models\Ship.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
