@@ -1,4 +1,5 @@
-﻿using Game1.Models;
+﻿using System.Collections.Generic;
+using Game1.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -31,10 +32,10 @@ namespace Slaughter
         SpriteFont Banner;
         string Ban;
 
-        Texture2D Wall;
-        Texture2D Wall2;
-        Texture2D Wall3;
-        Texture2D Wall4;
+        //Texture2D Wall;
+        //Texture2D Wall2;
+        //Texture2D Wall3;
+        //Texture2D Wall4;
         Texture2D Alien1_Missle;
         Texture2D Alien2_Missle;
         Texture2D Alien3_Missle;
@@ -84,10 +85,14 @@ namespace Slaughter
         Vector2 ControlMenuPosition = Vector2.Zero;
         Vector2 StoryMenuPosition = Vector2.Zero;
         Vector2 BannerPosition = Vector2.Zero;
-        Vector2 Wall1Position = new Vector2(0, 203);
-        Vector2 Wall2Position = new Vector2(200, 203);
-        Vector2 Wall3Position = new Vector2(400, 203);
-        Vector2 Wall4Position = new Vector2(600, 203);
+
+        private List<GameObject> wallsObjects;
+
+        //Vector2 Wall1Position = new Vector2(0, 203);
+        //Vector2 Wall2Position = new Vector2(200, 203);
+        //Vector2 Wall3Position = new Vector2(400, 203);
+        //Vector2 Wall4Position = new Vector2(600, 203);
+
         Vector2 Alien1_MisslePosition = new Vector2(30, 0);
         Vector2 Alien2_MisslePosition = new Vector2(230, 0);
         Vector2 Alien3_MisslePosition = new Vector2(430, 0);
@@ -179,10 +184,20 @@ namespace Slaughter
             WinScreen = Content.Load<Texture2D>("Win_Screen");
             ControlMenu = Content.Load<Texture2D>("CONTROLS_MENU");
             Banner = Content.Load<SpriteFont>("Banner");
-            Wall = Content.Load<Texture2D>("Wall");
-            Wall2 = Content.Load<Texture2D>("Wall");
-            Wall3 = Content.Load<Texture2D>("Wall");
-            Wall4 = Content.Load<Texture2D>("Wall");
+
+            wallsObjects = new List<GameObject>
+            {
+                new GameObject(Content.Load<Texture2D>("Wall"), new Vector2(0, 203)),
+                new GameObject(Content.Load<Texture2D>("Wall"), new Vector2(200, 203)),
+                new GameObject(Content.Load<Texture2D>("Wall"), new Vector2(400, 203)),
+                new GameObject(Content.Load<Texture2D>("Wall"), new Vector2(600, 203))
+            };
+
+            //Wall = Content.Load<Texture2D>("Wall");
+            //Wall2 = Content.Load<Texture2D>("Wall");
+            //Wall3 = Content.Load<Texture2D>("Wall");
+            //Wall4 = Content.Load<Texture2D>("Wall");
+
             Alien1_Missle = Content.Load<Texture2D>("AMissle");
             Alien2_Missle = Content.Load<Texture2D>("AMissle");
             Alien3_Missle = Content.Load<Texture2D>("AMissle");
@@ -310,10 +325,15 @@ namespace Slaughter
                     Alien4Position.X = 600;
 
                     //Resets wall positions
-                    Wall1Position = new Vector2(0, 203);
-                    Wall2Position = new Vector2(200, 203);
-                    Wall3Position = new Vector2(400, 203);
-                    Wall4Position = new Vector2(600, 203);
+                    foreach (var wall in wallsObjects)
+                    {
+                        wall.MoveToInitialPos();
+                    }
+
+                    //Wall1Position = new Vector2(0, 203);
+                    //Wall2Position = new Vector2(200, 203);
+                    //Wall3Position = new Vector2(400, 203);
+                    //Wall4Position = new Vector2(600, 203);
 
                     Alien1_H = 0;
                     Alien2_H = 0;
@@ -384,7 +404,7 @@ namespace Slaughter
         {
             int MaxX = graphics.GraphicsDevice.Viewport.Width - 100;
             int MaxX_A = graphics.GraphicsDevice.Viewport.Width - Alien1.Width;
-            int MaxX_W = graphics.GraphicsDevice.Viewport.Width - Wall.Width;
+            int MaxX_W = graphics.GraphicsDevice.Viewport.Width - wallsObjects[0].Width;
             int MinX = 0;
             int MaxY = graphics.GraphicsDevice.Viewport.Height - _playerGameObject.Texture.Height;
 
@@ -498,21 +518,12 @@ namespace Slaughter
         {
             if (Walls == 0)
             {
-                if (MisslePosition.Y >= Wall1Position.Y && MisslePosition.Y <= Wall1Position.Y + 17 && MisslePosition.X >= Wall1Position.X && MisslePosition.X <= Wall1Position.X + 94)
+                foreach (var wall in wallsObjects)
                 {
-                    Missle_H = 1;
-                }
-                if (MisslePosition.Y >= Wall2Position.Y && MisslePosition.Y <= Wall2Position.Y + 17 && MisslePosition.X >= Wall2Position.X && MisslePosition.X <= Wall2Position.X + 94)
-                {
-                    Missle_H = 1;
-                }
-                if (MisslePosition.Y >= Wall3Position.Y && MisslePosition.Y <= Wall3Position.Y + 17 && MisslePosition.X >= Wall3Position.X && MisslePosition.X <= Wall3Position.X + 94)
-                {
-                    Missle_H = 1;
-                }
-                if (MisslePosition.Y >= Wall4Position.Y && MisslePosition.Y <= Wall4Position.Y + 17 && MisslePosition.X >= Wall4Position.X && MisslePosition.X <= Wall4Position.X + 94)
-                {
-                    Missle_H = 1;
+                    if (MisslePosition.Y >= wall.Position.Y && MisslePosition.Y <= wall.Position.Y + 17 && MisslePosition.X >= wall.Position.X && MisslePosition.X <= wall.Position.X + 94)
+                    {
+                        Missle_H = 1;
+                    }
                 }
             }
         }
@@ -666,19 +677,19 @@ namespace Slaughter
         {
             if (Level_H < 6)
             {
-                if (Alien1_MisslePosition.Y + 65 >= Wall1Position.Y && Alien1_MisslePosition.Y + 65 <= Wall1Position.Y + 17 && Alien1_MisslePosition.X >= Wall1Position.X && Alien1_MisslePosition.X <= Wall1Position.X + 94)
+                if (Alien1_MisslePosition.Y + 65 >= wallsObjects[0].Position.Y && Alien1_MisslePosition.Y + 65 <= wallsObjects[0].Position.Y + 17 && Alien1_MisslePosition.X >= wallsObjects[0].Position.X && Alien1_MisslePosition.X <= wallsObjects[0].Position.X + 94)
                 {
                     A1Missle_H = 1;
                 }
-                if (Alien2_MisslePosition.Y + 65 >= Wall2Position.Y && Alien2_MisslePosition.Y + 65 <= Wall2Position.Y + 17 && Alien2_MisslePosition.X >= Wall2Position.X && Alien2_MisslePosition.X <= Wall2Position.X + 94)
+                if (Alien2_MisslePosition.Y + 65 >= wallsObjects[1].Position.Y && Alien2_MisslePosition.Y + 65 <= wallsObjects[1].Position.Y + 17 && Alien2_MisslePosition.X >= wallsObjects[1].Position.X && Alien2_MisslePosition.X <= wallsObjects[1].Position.X + 94)
                 {
                     A2Missle_H = 1;
                 }
-                if (Alien3_MisslePosition.Y + 65 >= Wall3Position.Y && Alien3_MisslePosition.Y + 65 <= Wall3Position.Y + 17 && Alien3_MisslePosition.X >= Wall3Position.X && Alien3_MisslePosition.X <= Wall3Position.X + 94)
+                if (Alien3_MisslePosition.Y + 65 >= wallsObjects[2].Position.Y && Alien3_MisslePosition.Y + 65 <= wallsObjects[2].Position.Y + 17 && Alien3_MisslePosition.X >= wallsObjects[2].Position.X && Alien3_MisslePosition.X <= wallsObjects[2].Position.X + 94)
                 {
                     A3Missle_H = 1;
                 }
-                if (Alien4_MisslePosition.Y + 65 >= Wall4Position.Y && Alien4_MisslePosition.Y + 65 <= Wall4Position.Y + 17 && Alien4_MisslePosition.X >= Wall4Position.X && Alien4_MisslePosition.X <= Wall4Position.X + 94)
+                if (Alien4_MisslePosition.Y + 65 >= wallsObjects[3].Position.Y && Alien4_MisslePosition.Y + 65 <= wallsObjects[3].Position.Y + 17 && Alien4_MisslePosition.X >= wallsObjects[3].Position.X && Alien4_MisslePosition.X <= wallsObjects[3].Position.X + 94)
                 {
                     A4Missle_H = 1;
                 }
@@ -740,18 +751,19 @@ namespace Slaughter
         {
             if (Level_H >= 4)
             {
-                if (Wall1Position.X < MinX)
+                if (wallsObjects[0].Position.X < MinX)
                 {
                     Wall_direc = 1;
                 }
-                else if (Wall4Position.X > MaxX_W)
+                else if (wallsObjects[3].Position.X > MaxX_W)
                 {
                     Wall_direc = -1;
                 }
-                Wall1Position.X = Wall1Position.X + (Wall_Velocity * Wall_direc);
-                Wall2Position.X = Wall2Position.X + (Wall_Velocity * Wall_direc);
-                Wall3Position.X = Wall3Position.X + (Wall_Velocity * Wall_direc);
-                Wall4Position.X = Wall4Position.X + (Wall_Velocity * Wall_direc);
+
+                foreach (var wall in wallsObjects)
+                {
+                    wall.Position.X = wall.Position.X + (Wall_Velocity * Wall_direc);
+                }
             }
         }
 
@@ -1178,10 +1190,10 @@ namespace Slaughter
             }
             if (Walls == 0)
             {
-                spriteBatch.Draw(Wall, Wall1Position, Color.White);
-                spriteBatch.Draw(Wall2, Wall2Position, Color.White);
-                spriteBatch.Draw(Wall3, Wall3Position, Color.White);
-                spriteBatch.Draw(Wall4, Wall4Position, Color.White);
+                foreach (var wall in wallsObjects)
+                {
+                    wall.Draw(spriteBatch);
+                }
             }
             if (Game_Start == 0)
             {
