@@ -393,7 +393,28 @@ namespace Slaughter
             Game_State = 2;
             Game_level = 0;
             Time++;
-            // Moves Player Ship left and right
+
+            MovePlayerShipLeftAndRight(gameTime);
+
+            BulletDeployment();
+
+            CheckForMissleHittingWall();
+
+            CheckForMissleHittingAlien();
+
+            LevelDifferences(gameTime, MaxX_W, MinX);
+
+            AlienMovement(MaxX_A, MinX);
+
+            AlienVelocityAccumulator();
+
+            CheckForBorder(MaxX, MinX);
+
+            CheckForWin();
+        }
+
+        private void MovePlayerShipLeftAndRight(GameTime gameTime)
+        {
             Move = Keyboard.GetState();
             if (Move.IsKeyDown(Keys.Left))
             {
@@ -446,8 +467,10 @@ namespace Slaughter
                 Player_Rec = new Rectangle((currentFrame * spriteWidth) - 100, 0, spriteWidth, spriteHeight);
                 currentFrame = 1;
             }
+        }
 
-            #region Bullet Deployment
+        private void BulletDeployment()
+        {
             Shoot = Keyboard.GetState();
             if (Shoot.IsKeyDown(Keys.Up))
             {
@@ -469,9 +492,10 @@ namespace Slaughter
             {
                 MisslePosition.Y = MisslePosition.Y - Missle_Velocity;
             }
-            #endregion
+        }
 
-            #region Check for Missle hitting Wall
+        private void CheckForMissleHittingWall()
+        {
             if (Walls == 0)
             {
                 if (MisslePosition.Y >= Wall1Position.Y && MisslePosition.Y <= Wall1Position.Y + 17 && MisslePosition.X >= Wall1Position.X && MisslePosition.X <= Wall1Position.X + 94)
@@ -491,9 +515,10 @@ namespace Slaughter
                     Missle_H = 1;
                 }
             }
-            #endregion
+        }
 
-            #region Check for Missle hitting Alien
+        private void CheckForMissleHittingAlien()
+        {
             if (Missle_H == 0 && MisslePosition.Y >= Alien1Position.Y && MisslePosition.Y <= Alien1Position.Y + 100 && MisslePosition.X >= Alien1Position.X && MisslePosition.X <= Alien1Position.X + 100 && Alien1_H == 0)
             {
                 Alien1_H = 1;
@@ -518,295 +543,328 @@ namespace Slaughter
                 Missle_H = 1;
                 Tot_Score = Tot_Score + 100;
             }
-            #endregion
+        }
 
-            #region Level Differences
+        private void LevelDifferences(GameTime gameTime, int MaxX_W, int MinX)
+        {
             if (Level_H >= 3)
             {
                 Ban = "We tried being peaceful";
-                #region Alien1 Shooting
-                if (Game_Start == 1 && Alien1_H == 0 && ((Alien1Position.X >= _playerGameObject.Position.X && Alien1Position.X <= _playerGameObject.Position.X + 100) || (Alien1Position.X + 140 >= _playerGameObject.Position.X && Alien1Position.X + 140 <= _playerGameObject.Position.X + 100)))
-                {
-                    if (Alien1_MisslePosition.Y > 400)
-                    {
-                        Alien1_H_Fire = 0;
-                    }
-                    if (Alien1_MisslePosition.Y == 0 || Alien1_H_Fire == 0 || A1Missle_H == 1)
-                    {
-                        Alien1_H_Fire = 1;
-                        Alien1_MisslePosition.Y = 0;
-                        Alien1_MisslePosition.X = Alien1Position.X + 30;
-                    }
-                    A1Missle_H = 0;
-                }
+                AlienOneShooting();
 
-                if (A1Missle_H == 0)
-                {
-                    Alien1_MisslePosition.Y = Alien1_MisslePosition.Y + AMissle_Velocity;
-                }
-                #endregion
-                #region Alien2 Shooting
-                if (Game_Start == 1 && Alien2_H == 0 && ((Alien2Position.X >= _playerGameObject.Position.X && Alien2Position.X <= _playerGameObject.Position.X + 100) || (Alien2Position.X + 140 >= _playerGameObject.Position.X && Alien2Position.X + 140 <= _playerGameObject.Position.X + 100)))
-                {
-                    if (Alien2_MisslePosition.Y > 400)
-                    {
-                        Alien2_H_Fire = 0;
-                    }
-                    if (Alien2_MisslePosition.Y == 0 || Alien2_H_Fire == 0 || A2Missle_H == 1)
-                    {
-                        Alien2_H_Fire = 1;
-                        Alien2_MisslePosition.Y = 0;
-                        Alien2_MisslePosition.X = Alien2Position.X + 30;
-                    }
-                    A2Missle_H = 0;
-                }
+                AlienTwoShooting();
 
-                if (A2Missle_H == 0)
-                {
-                    Alien2_MisslePosition.Y = Alien2_MisslePosition.Y + AMissle_Velocity;
-                }
-                #endregion
-                #region Alien3 Shooting
-                if (Game_Start == 1 && Alien3_H == 0 && ((Alien3Position.X >= _playerGameObject.Position.X && Alien3Position.X <= _playerGameObject.Position.X + 100) || (Alien3Position.X + 140 >= _playerGameObject.Position.X && Alien3Position.X + 140 <= _playerGameObject.Position.X + 100)))
-                {
-                    if (Alien3_MisslePosition.Y > 400)
-                    {
-                        Alien3_H_Fire = 0;
-                    }
-                    if (Alien3_MisslePosition.Y == 0 || Alien3_H_Fire == 0 || A3Missle_H == 1)
-                    {
-                        Alien3_H_Fire = 1;
-                        Alien3_MisslePosition.Y = 0;
-                        Alien3_MisslePosition.X = Alien3Position.X + 30;
-                    }
-                    A3Missle_H = 0;
-                }
+                AlienThreeShooting();
 
-                if (A3Missle_H == 0)
-                {
-                    Alien3_MisslePosition.Y = Alien3_MisslePosition.Y + AMissle_Velocity;
-                }
-                #endregion
-                #region Alien4 Shooting
-                if (Game_Start == 1 && Alien4_H == 0 && ((Alien4Position.X >= _playerGameObject.Position.X && Alien4Position.X <= _playerGameObject.Position.X + 100) || (Alien4Position.X + 140 >= _playerGameObject.Position.X && Alien4Position.X + 140 <= _playerGameObject.Position.X + 100)))
-                {
-                    if (Alien4_MisslePosition.Y > 400)
-                    {
-                        Alien4_H_Fire = 0;
-                    }
-                    if (Alien4_MisslePosition.Y == 0 || Alien4_H_Fire == 0 || A4Missle_H == 1)
-                    {
-                        Alien4_H_Fire = 1;
-                        Alien4_MisslePosition.Y = 0;
-                        Alien4_MisslePosition.X = Alien4Position.X + 30;
-                    }
-                    A4Missle_H = 0;
-                }
+                AlienFourShooting();
 
-                if (A4Missle_H == 0)
+                TurnWallsOff();
+
+                CheckForAlienMissleHittingPlayerMissle();
+
+                MoveWallsSideToSide(MaxX_W, MinX);
+
+                CheckForMissleHittingPlayer();
+
+                CheckForAlienGhost(gameTime);
+            }
+        }
+
+        private void AlienOneShooting()
+        {
+            if (Game_Start == 1 && Alien1_H == 0 && ((Alien1Position.X >= _playerGameObject.Position.X && Alien1Position.X <= _playerGameObject.Position.X + 100) || (Alien1Position.X + 140 >= _playerGameObject.Position.X && Alien1Position.X + 140 <= _playerGameObject.Position.X + 100)))
+            {
+                if (Alien1_MisslePosition.Y > 400)
                 {
-                    Alien4_MisslePosition.Y = Alien4_MisslePosition.Y + AMissle_Velocity;
+                    Alien1_H_Fire = 0;
                 }
-                #endregion
-                #region Turns Walls off
-                if (Level_H < 6)
+                if (Alien1_MisslePosition.Y == 0 || Alien1_H_Fire == 0 || A1Missle_H == 1)
                 {
-                    if (Alien1_MisslePosition.Y + 65 >= Wall1Position.Y && Alien1_MisslePosition.Y + 65 <= Wall1Position.Y + 17 && Alien1_MisslePosition.X >= Wall1Position.X && Alien1_MisslePosition.X <= Wall1Position.X + 94)
+                    Alien1_H_Fire = 1;
+                    Alien1_MisslePosition.Y = 0;
+                    Alien1_MisslePosition.X = Alien1Position.X + 30;
+                }
+                A1Missle_H = 0;
+            }
+
+            if (A1Missle_H == 0)
+            {
+                Alien1_MisslePosition.Y = Alien1_MisslePosition.Y + AMissle_Velocity;
+            }
+        }
+
+        private void AlienTwoShooting()
+        {
+            if (Game_Start == 1 && Alien2_H == 0 && ((Alien2Position.X >= _playerGameObject.Position.X && Alien2Position.X <= _playerGameObject.Position.X + 100) || (Alien2Position.X + 140 >= _playerGameObject.Position.X && Alien2Position.X + 140 <= _playerGameObject.Position.X + 100)))
+            {
+                if (Alien2_MisslePosition.Y > 400)
+                {
+                    Alien2_H_Fire = 0;
+                }
+                if (Alien2_MisslePosition.Y == 0 || Alien2_H_Fire == 0 || A2Missle_H == 1)
+                {
+                    Alien2_H_Fire = 1;
+                    Alien2_MisslePosition.Y = 0;
+                    Alien2_MisslePosition.X = Alien2Position.X + 30;
+                }
+                A2Missle_H = 0;
+            }
+
+            if (A2Missle_H == 0)
+            {
+                Alien2_MisslePosition.Y = Alien2_MisslePosition.Y + AMissle_Velocity;
+            }
+        }
+
+        private void AlienThreeShooting()
+        {
+            if (Game_Start == 1 && Alien3_H == 0 && ((Alien3Position.X >= _playerGameObject.Position.X && Alien3Position.X <= _playerGameObject.Position.X + 100) || (Alien3Position.X + 140 >= _playerGameObject.Position.X && Alien3Position.X + 140 <= _playerGameObject.Position.X + 100)))
+            {
+                if (Alien3_MisslePosition.Y > 400)
+                {
+                    Alien3_H_Fire = 0;
+                }
+                if (Alien3_MisslePosition.Y == 0 || Alien3_H_Fire == 0 || A3Missle_H == 1)
+                {
+                    Alien3_H_Fire = 1;
+                    Alien3_MisslePosition.Y = 0;
+                    Alien3_MisslePosition.X = Alien3Position.X + 30;
+                }
+                A3Missle_H = 0;
+            }
+
+            if (A3Missle_H == 0)
+            {
+                Alien3_MisslePosition.Y = Alien3_MisslePosition.Y + AMissle_Velocity;
+            }
+        }
+
+        private void AlienFourShooting()
+        {
+            if (Game_Start == 1 && Alien4_H == 0 && ((Alien4Position.X >= _playerGameObject.Position.X && Alien4Position.X <= _playerGameObject.Position.X + 100) || (Alien4Position.X + 140 >= _playerGameObject.Position.X && Alien4Position.X + 140 <= _playerGameObject.Position.X + 100)))
+            {
+                if (Alien4_MisslePosition.Y > 400)
+                {
+                    Alien4_H_Fire = 0;
+                }
+                if (Alien4_MisslePosition.Y == 0 || Alien4_H_Fire == 0 || A4Missle_H == 1)
+                {
+                    Alien4_H_Fire = 1;
+                    Alien4_MisslePosition.Y = 0;
+                    Alien4_MisslePosition.X = Alien4Position.X + 30;
+                }
+                A4Missle_H = 0;
+            }
+
+            if (A4Missle_H == 0)
+            {
+                Alien4_MisslePosition.Y = Alien4_MisslePosition.Y + AMissle_Velocity;
+            }
+        }
+
+        private void TurnWallsOff()
+        {
+            if (Level_H < 6)
+            {
+                if (Alien1_MisslePosition.Y + 65 >= Wall1Position.Y && Alien1_MisslePosition.Y + 65 <= Wall1Position.Y + 17 && Alien1_MisslePosition.X >= Wall1Position.X && Alien1_MisslePosition.X <= Wall1Position.X + 94)
+                {
+                    A1Missle_H = 1;
+                }
+                if (Alien2_MisslePosition.Y + 65 >= Wall2Position.Y && Alien2_MisslePosition.Y + 65 <= Wall2Position.Y + 17 && Alien2_MisslePosition.X >= Wall2Position.X && Alien2_MisslePosition.X <= Wall2Position.X + 94)
+                {
+                    A2Missle_H = 1;
+                }
+                if (Alien3_MisslePosition.Y + 65 >= Wall3Position.Y && Alien3_MisslePosition.Y + 65 <= Wall3Position.Y + 17 && Alien3_MisslePosition.X >= Wall3Position.X && Alien3_MisslePosition.X <= Wall3Position.X + 94)
+                {
+                    A3Missle_H = 1;
+                }
+                if (Alien4_MisslePosition.Y + 65 >= Wall4Position.Y && Alien4_MisslePosition.Y + 65 <= Wall4Position.Y + 17 && Alien4_MisslePosition.X >= Wall4Position.X && Alien4_MisslePosition.X <= Wall4Position.X + 94)
+                {
+                    A4Missle_H = 1;
+                }
+            }
+        }
+
+        private void CheckForAlienMissleHittingPlayerMissle()
+        {
+            if (Level_H >= 3)
+            {
+                if (Missle_H == 0 && Alien1_MisslePosition.Y + 65 >= MisslePosition.Y && Alien1_MisslePosition.Y + 65 <= MisslePosition.Y + 17 && Alien1_MisslePosition.X >= MisslePosition.X && Alien1_MisslePosition.X <= MisslePosition.X + 83)
+                {
+                    Missle_H = 1;
+                    if (Level_H < 5)
                     {
                         A1Missle_H = 1;
-                    }
-                    if (Alien2_MisslePosition.Y + 65 >= Wall2Position.Y && Alien2_MisslePosition.Y + 65 <= Wall2Position.Y + 17 && Alien2_MisslePosition.X >= Wall2Position.X && Alien2_MisslePosition.X <= Wall2Position.X + 94)
-                    {
                         A2Missle_H = 1;
-                    }
-                    if (Alien3_MisslePosition.Y + 65 >= Wall3Position.Y && Alien3_MisslePosition.Y + 65 <= Wall3Position.Y + 17 && Alien3_MisslePosition.X >= Wall3Position.X && Alien3_MisslePosition.X <= Wall3Position.X + 94)
-                    {
                         A3Missle_H = 1;
-                    }
-                    if (Alien4_MisslePosition.Y + 65 >= Wall4Position.Y && Alien4_MisslePosition.Y + 65 <= Wall4Position.Y + 17 && Alien4_MisslePosition.X >= Wall4Position.X && Alien4_MisslePosition.X <= Wall4Position.X + 94)
-                    {
                         A4Missle_H = 1;
                     }
                 }
-                #endregion
-
-                #region Check for Alien Missle hitting player Missle
-                if (Level_H >= 3)
+                if (Missle_H == 0 && Alien2_MisslePosition.Y + 65 >= MisslePosition.Y && Alien2_MisslePosition.Y + 65 <= MisslePosition.Y + 17 && Alien2_MisslePosition.X >= MisslePosition.X && Alien2_MisslePosition.X <= MisslePosition.X + 83)
                 {
-                    if (Missle_H == 0 && Alien1_MisslePosition.Y + 65 >= MisslePosition.Y && Alien1_MisslePosition.Y + 65 <= MisslePosition.Y + 17 && Alien1_MisslePosition.X >= MisslePosition.X && Alien1_MisslePosition.X <= MisslePosition.X + 83)
+                    Missle_H = 1;
+                    if (Level_H < 5)
                     {
-                        Missle_H = 1;
-                        if (Level_H < 5)
-                        {
-                            A1Missle_H = 1;
-                            A2Missle_H = 1;
-                            A3Missle_H = 1;
-                            A4Missle_H = 1;
-                        }
-                    }
-                    if (Missle_H == 0 && Alien2_MisslePosition.Y + 65 >= MisslePosition.Y && Alien2_MisslePosition.Y + 65 <= MisslePosition.Y + 17 && Alien2_MisslePosition.X >= MisslePosition.X && Alien2_MisslePosition.X <= MisslePosition.X + 83)
-                    {
-                        Missle_H = 1;
-                        if (Level_H < 5)
-                        {
-                            A1Missle_H = 1;
-                            A2Missle_H = 1;
-                            A3Missle_H = 1;
-                            A4Missle_H = 1;
-                        }
-                    }
-                    if (Missle_H == 0 && Alien3_MisslePosition.Y + 65 >= MisslePosition.Y && Alien3_MisslePosition.Y + 65 <= MisslePosition.Y + 17 && Alien3_MisslePosition.X >= MisslePosition.X && Alien3_MisslePosition.X <= MisslePosition.X + 83)
-                    {
-                        Missle_H = 1;
-                        if (Level_H < 5)
-                        {
-                            A1Missle_H = 1;
-                            A2Missle_H = 1;
-                            A3Missle_H = 1;
-                            A4Missle_H = 1;
-                        }
-                    }
-                    if (Missle_H == 0 && Alien4_MisslePosition.Y + 65 >= MisslePosition.Y && Alien4_MisslePosition.Y + 65 <= MisslePosition.Y + 17 && Alien4_MisslePosition.X >= MisslePosition.X && Alien4_MisslePosition.X <= MisslePosition.X + 83)
-                    {
-                        Missle_H = 1;
-                        if (Level_H < 5)
-                        {
-                            A1Missle_H = 1;
-                            A2Missle_H = 1;
-                            A3Missle_H = 1;
-                            A4Missle_H = 1;
-                        }
+                        A1Missle_H = 1;
+                        A2Missle_H = 1;
+                        A3Missle_H = 1;
+                        A4Missle_H = 1;
                     }
                 }
-                #endregion
-
-                #region Moves walls side to side
-                if (Level_H >= 4)
+                if (Missle_H == 0 && Alien3_MisslePosition.Y + 65 >= MisslePosition.Y && Alien3_MisslePosition.Y + 65 <= MisslePosition.Y + 17 && Alien3_MisslePosition.X >= MisslePosition.X && Alien3_MisslePosition.X <= MisslePosition.X + 83)
                 {
-                    if (Wall1Position.X < MinX)
+                    Missle_H = 1;
+                    if (Level_H < 5)
                     {
-                        Wall_direc = 1;
-                    }
-                    else if (Wall4Position.X > MaxX_W)
-                    {
-                        Wall_direc = -1;
-                    }
-                    Wall1Position.X = Wall1Position.X + (Wall_Velocity * Wall_direc);
-                    Wall2Position.X = Wall2Position.X + (Wall_Velocity * Wall_direc);
-                    Wall3Position.X = Wall3Position.X + (Wall_Velocity * Wall_direc);
-                    Wall4Position.X = Wall4Position.X + (Wall_Velocity * Wall_direc);
-                }
-                #endregion
-
-                #region Check for Missle hitting Player
-                if (A1Missle_H == 0 && Alien1_MisslePosition.Y + 65 >= _playerGameObject.Position.Y && Alien1_MisslePosition.Y + 65 <= _playerGameObject.Position.Y + 17 && Alien1_MisslePosition.X >= _playerGameObject.Position.X && Alien1_MisslePosition.X <= _playerGameObject.Position.X + 83)
-                {
-                    A1Missle_H = 1;
-                    Tot_Score = Tot_Score - 100;
-                    lose = true;
-                    Game_State = -1;
-                }
-                if (A2Missle_H == 0 && Alien2_MisslePosition.Y + 65 >= _playerGameObject.Position.Y && Alien2_MisslePosition.Y + 65 <= _playerGameObject.Position.Y + 17 && Alien2_MisslePosition.X >= _playerGameObject.Position.X && Alien2_MisslePosition.X <= _playerGameObject.Position.X + 83)
-                {
-                    A2Missle_H = 1;
-                    Tot_Score = Tot_Score - 100;
-                    lose = true;
-                    Game_State = -1;
-                }
-                if (A3Missle_H == 0 && Alien3_MisslePosition.Y + 65 >= _playerGameObject.Position.Y && Alien3_MisslePosition.Y + 65 <= _playerGameObject.Position.Y + 17 && Alien3_MisslePosition.X >= _playerGameObject.Position.X && Alien3_MisslePosition.X <= _playerGameObject.Position.X + 83)
-                {
-                    A3Missle_H = 1;
-                    Tot_Score = Tot_Score - 100;
-                    lose = true;
-                    Game_State = -1;
-                }
-                if (A4Missle_H == 0 && Alien4_MisslePosition.Y + 65 >= _playerGameObject.Position.Y && Alien4_MisslePosition.Y + 65 <= _playerGameObject.Position.Y + 17 && Alien4_MisslePosition.X >= _playerGameObject.Position.X && Alien4_MisslePosition.X <= _playerGameObject.Position.X + 83)
-                {
-                    A4Missle_H = 1;
-                    Tot_Score = Tot_Score - 100;
-                    lose = true;
-                    Game_State = -1;
-                }
-                #endregion
-
-                #region Check for Alien Ghost
-                if (Level_H >= 7)
-                {
-                    Shield_Rec = new Rectangle((Ghost_Frame * spriteWidth) - 100, 0, spriteWidth, spriteHeight);
-
-                    Ghost_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-
-                    if (Ghost_timer > interval)
-                    {
-                        //Show the next frame
-                        Ghost_Frame--;
-                        //Reset the timer
-                        Ghost_timer = 0f;
-                    }
-                    //If we are on the last frame, reset back to the one before the first frame (because currentFrame++ is called next so the next frame will be 1!)
-                    if (Ghost_Frame < 1)
-                    {
-                        Ghost_Frame = 3;
-                    }
-
-                    if (Missle_H == 0 && MisslePosition.Y >= Alien1Position.Y && MisslePosition.Y <= Alien1Position.Y + 100 && MisslePosition.X >= Alien1Position.X && MisslePosition.X <= Alien1Position.X + 100)
-                    {
-                        if (Alien1_H == 1)
-                        {
-                            Alien1_H = 0;
-                            Missle_H = 1;
-                        }
-                        else
-                        {
-                            Alien1_H = 1;
-                            Missle_H = 1;
-                        }
-                    }
-                    else if (Missle_H == 0 && MisslePosition.Y >= Alien2Position.Y && MisslePosition.Y <= Alien2Position.Y + 100 && MisslePosition.X >= Alien2Position.X && MisslePosition.X <= Alien2Position.X + 100)
-                    {
-                        if (Alien2_H == 1)
-                        {
-                            Alien2_H = 0;
-                            Missle_H = 1;
-                        }
-                        else
-                        {
-                            Alien2_H = 1;
-                            Missle_H = 1;
-                        }
-                    }
-                    else if (Missle_H == 0 && MisslePosition.Y >= Alien3Position.Y && MisslePosition.Y <= Alien3Position.Y + 100 && MisslePosition.X >= Alien3Position.X && MisslePosition.X <= Alien3Position.X + 100)
-                    {
-                        if (Alien3_H == 1)
-                        {
-                            Alien3_H = 0;
-                            Missle_H = 1;
-                        }
-                        else
-                        {
-                            Alien3_H = 1;
-                            Missle_H = 1;
-                        }
-                    }
-                    else if (Missle_H == 0 && MisslePosition.Y >= Alien4Position.Y && MisslePosition.Y <= Alien4Position.Y + 100 && MisslePosition.X >= Alien4Position.X && MisslePosition.X <= Alien4Position.X + 100)
-                    {
-                        if (Alien4_H == 1)
-                        {
-                            Alien4_H = 0;
-                            Missle_H = 1;
-                        }
-                        else
-                        {
-                            Alien4_H = 1;
-                            Missle_H = 1;
-                        }
+                        A1Missle_H = 1;
+                        A2Missle_H = 1;
+                        A3Missle_H = 1;
+                        A4Missle_H = 1;
                     }
                 }
-                #endregion
+                if (Missle_H == 0 && Alien4_MisslePosition.Y + 65 >= MisslePosition.Y && Alien4_MisslePosition.Y + 65 <= MisslePosition.Y + 17 && Alien4_MisslePosition.X >= MisslePosition.X && Alien4_MisslePosition.X <= MisslePosition.X + 83)
+                {
+                    Missle_H = 1;
+                    if (Level_H < 5)
+                    {
+                        A1Missle_H = 1;
+                        A2Missle_H = 1;
+                        A3Missle_H = 1;
+                        A4Missle_H = 1;
+                    }
+                }
             }
-            #endregion
+        }
 
-            #region Alien Movement
+        private void MoveWallsSideToSide(int MaxX_W, int MinX)
+        {
+            if (Level_H >= 4)
+            {
+                if (Wall1Position.X < MinX)
+                {
+                    Wall_direc = 1;
+                }
+                else if (Wall4Position.X > MaxX_W)
+                {
+                    Wall_direc = -1;
+                }
+                Wall1Position.X = Wall1Position.X + (Wall_Velocity * Wall_direc);
+                Wall2Position.X = Wall2Position.X + (Wall_Velocity * Wall_direc);
+                Wall3Position.X = Wall3Position.X + (Wall_Velocity * Wall_direc);
+                Wall4Position.X = Wall4Position.X + (Wall_Velocity * Wall_direc);
+            }
+        }
+
+        private void CheckForMissleHittingPlayer()
+        {
+            if (A1Missle_H == 0 && Alien1_MisslePosition.Y + 65 >= _playerGameObject.Position.Y && Alien1_MisslePosition.Y + 65 <= _playerGameObject.Position.Y + 17 && Alien1_MisslePosition.X >= _playerGameObject.Position.X && Alien1_MisslePosition.X <= _playerGameObject.Position.X + 83)
+            {
+                A1Missle_H = 1;
+                Tot_Score = Tot_Score - 100;
+                lose = true;
+                Game_State = -1;
+            }
+            if (A2Missle_H == 0 && Alien2_MisslePosition.Y + 65 >= _playerGameObject.Position.Y && Alien2_MisslePosition.Y + 65 <= _playerGameObject.Position.Y + 17 && Alien2_MisslePosition.X >= _playerGameObject.Position.X && Alien2_MisslePosition.X <= _playerGameObject.Position.X + 83)
+            {
+                A2Missle_H = 1;
+                Tot_Score = Tot_Score - 100;
+                lose = true;
+                Game_State = -1;
+            }
+            if (A3Missle_H == 0 && Alien3_MisslePosition.Y + 65 >= _playerGameObject.Position.Y && Alien3_MisslePosition.Y + 65 <= _playerGameObject.Position.Y + 17 && Alien3_MisslePosition.X >= _playerGameObject.Position.X && Alien3_MisslePosition.X <= _playerGameObject.Position.X + 83)
+            {
+                A3Missle_H = 1;
+                Tot_Score = Tot_Score - 100;
+                lose = true;
+                Game_State = -1;
+            }
+            if (A4Missle_H == 0 && Alien4_MisslePosition.Y + 65 >= _playerGameObject.Position.Y && Alien4_MisslePosition.Y + 65 <= _playerGameObject.Position.Y + 17 && Alien4_MisslePosition.X >= _playerGameObject.Position.X && Alien4_MisslePosition.X <= _playerGameObject.Position.X + 83)
+            {
+                A4Missle_H = 1;
+                Tot_Score = Tot_Score - 100;
+                lose = true;
+                Game_State = -1;
+            }
+        }
+
+        private void CheckForAlienGhost(GameTime gameTime)
+        {
+            if (Level_H >= 7)
+            {
+                Shield_Rec = new Rectangle((Ghost_Frame * spriteWidth) - 100, 0, spriteWidth, spriteHeight);
+
+                Ghost_timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+
+                if (Ghost_timer > interval)
+                {
+                    //Show the next frame
+                    Ghost_Frame--;
+                    //Reset the timer
+                    Ghost_timer = 0f;
+                }
+                //If we are on the last frame, reset back to the one before the first frame (because currentFrame++ is called next so the next frame will be 1!)
+                if (Ghost_Frame < 1)
+                {
+                    Ghost_Frame = 3;
+                }
+
+                if (Missle_H == 0 && MisslePosition.Y >= Alien1Position.Y && MisslePosition.Y <= Alien1Position.Y + 100 && MisslePosition.X >= Alien1Position.X && MisslePosition.X <= Alien1Position.X + 100)
+                {
+                    if (Alien1_H == 1)
+                    {
+                        Alien1_H = 0;
+                        Missle_H = 1;
+                    }
+                    else
+                    {
+                        Alien1_H = 1;
+                        Missle_H = 1;
+                    }
+                }
+                else if (Missle_H == 0 && MisslePosition.Y >= Alien2Position.Y && MisslePosition.Y <= Alien2Position.Y + 100 && MisslePosition.X >= Alien2Position.X && MisslePosition.X <= Alien2Position.X + 100)
+                {
+                    if (Alien2_H == 1)
+                    {
+                        Alien2_H = 0;
+                        Missle_H = 1;
+                    }
+                    else
+                    {
+                        Alien2_H = 1;
+                        Missle_H = 1;
+                    }
+                }
+                else if (Missle_H == 0 && MisslePosition.Y >= Alien3Position.Y && MisslePosition.Y <= Alien3Position.Y + 100 && MisslePosition.X >= Alien3Position.X && MisslePosition.X <= Alien3Position.X + 100)
+                {
+                    if (Alien3_H == 1)
+                    {
+                        Alien3_H = 0;
+                        Missle_H = 1;
+                    }
+                    else
+                    {
+                        Alien3_H = 1;
+                        Missle_H = 1;
+                    }
+                }
+                else if (Missle_H == 0 && MisslePosition.Y >= Alien4Position.Y && MisslePosition.Y <= Alien4Position.Y + 100 && MisslePosition.X >= Alien4Position.X && MisslePosition.X <= Alien4Position.X + 100)
+                {
+                    if (Alien4_H == 1)
+                    {
+                        Alien4_H = 0;
+                        Missle_H = 1;
+                    }
+                    else
+                    {
+                        Alien4_H = 1;
+                        Missle_H = 1;
+                    }
+                }
+            }
+        }
+
+        private void AlienMovement(int MaxX_A, int MinX)
+        {
             //Move Alien side to side
             if (Alien1_H == 0)
             {
@@ -868,9 +926,10 @@ namespace Slaughter
             Alien2Position.X = Alien2Position.X + (Alien_Velocity * Alien_direc);
             Alien3Position.X = Alien3Position.X + (Alien_Velocity * Alien_direc);
             Alien4Position.X = Alien4Position.X + (Alien_Velocity * Alien_direc);
-            #endregion
+        }
 
-            #region Alien Velocity Accumulator
+        private void AlienVelocityAccumulator()
+        {
             if (Alien1_H == 1 && A1_AccumH == 0)
             {
                 Alien_Velocity++;
@@ -891,9 +950,10 @@ namespace Slaughter
                 Alien_Velocity++;
                 A4_AccumH = 1;
             }
-            #endregion
+        }
 
-            #region Check for border.
+        private void CheckForBorder(int MaxX, int MinX)
+        {
             if (_playerGameObject.Position.X > MaxX)
             {
                 _playerGameObject.Position.X = MaxX;
@@ -909,9 +969,10 @@ namespace Slaughter
             {
                 Game_State = 0;
             }
-            #endregion
+        }
 
-            #region Check for Win
+        private void CheckForWin()
+        {
             if (Alien1_H == 1 && Alien2_H == 1 && Alien3_H == 1 && Alien4_H == 1 && lose != true)
             {
                 win = true;
@@ -929,7 +990,6 @@ namespace Slaughter
                 }
                 Tot_Score = Tot_Score - (Fire_Count + (Time / 1000));
             }
-            #endregion
         }
 
         private void UpdateWinLose()
