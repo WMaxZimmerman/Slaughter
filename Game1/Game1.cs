@@ -69,6 +69,7 @@ namespace Game1
         private List<GameObject> alienShips;
         private List<GameObject> wallsObjects;
         private List<GameObject> alienMissles;
+        private List<GameObject> GameObjects;
         #endregion
 
         // These are sprite speeds
@@ -142,26 +143,22 @@ namespace Game1
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            _playerGameObject = new PlayerShip(Content.Load<Texture2D>("Player_Ship"), new Vector2(360, 388), 100, 100);
+            GameObjects = new List<GameObject>();
+            
             playerMissle = new GameObject(Content.Load<Texture2D>("Missle"), new Vector2(390, 388));
 
-            alienShips = new List<GameObject>
-            {
-                new GameObject(Content.Load<Texture2D>("Alien_Ship"), Vector2.Zero),
-                new GameObject(Content.Load<Texture2D>("Alien_Ship"), new Vector2(200, 0)),
-                new GameObject(Content.Load<Texture2D>("Alien_Ship"), new Vector2(400, 0)),
-                new GameObject(Content.Load<Texture2D>("Alien_Ship"), new Vector2(600, 0))
-            };
+            GameObjects.Add(new PlayerShip(Content.Load<Texture2D>("Player_Ship"), new Vector2(360, 388), 100, 100));
 
-            wallsObjects = new List<GameObject>
-            {
-                new GameObject(Content.Load<Texture2D>("Wall"), new Vector2(0, 203)),
-                new GameObject(Content.Load<Texture2D>("Wall"), new Vector2(200, 203)),
-                new GameObject(Content.Load<Texture2D>("Wall"), new Vector2(400, 203)),
-                new GameObject(Content.Load<Texture2D>("Wall"), new Vector2(600, 203))
-            };
-
+            GameObjects.Add(new AlienShip(Content.Load<Texture2D>("Alien_Ship"), Vector2.Zero, 100, 100));
+            GameObjects.Add(new AlienShip(Content.Load<Texture2D>("Alien_Ship"), new Vector2(200, 0), 100, 100));
+            GameObjects.Add(new AlienShip(Content.Load<Texture2D>("Alien_Ship"), new Vector2(400, 0), 100, 100));
+            GameObjects.Add(new AlienShip(Content.Load<Texture2D>("Alien_Ship"), new Vector2(600, 0), 100, 100));
+            
+            GameObjects.Add(new Wall(Content.Load<Texture2D>("Wall"), new Vector2(0, 203)));
+            GameObjects.Add(new Wall(Content.Load<Texture2D>("Wall"), new Vector2(200, 203)));
+            GameObjects.Add(new Wall(Content.Load<Texture2D>("Wall"), new Vector2(400, 203)));
+            GameObjects.Add(new Wall(Content.Load<Texture2D>("Wall"), new Vector2(600, 203)));
+            
             alienMissles = new List<GameObject>
             {
                 new GameObject(Content.Load<Texture2D>("AMissle"), new Vector2(30, 0)),
@@ -360,7 +357,7 @@ namespace Game1
             Game_level = 0;
             Time++;
             
-            _playerGameObject.Update(gameTime, ref Game_Start);
+            _playerGameObject.Update(gameTime, ref Game_Start, GameObjects);
 
             BulletDeployment();
 

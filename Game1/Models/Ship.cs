@@ -11,6 +11,7 @@ namespace Game1.Models
         protected int currentFrame;
         protected float timer = 0f;
         protected float interval = 100f;
+        public int Direction { get; set; }
 
         public Ship(Texture2D texture, Vector2 postion, int height, int width) : base(texture, postion)
         {

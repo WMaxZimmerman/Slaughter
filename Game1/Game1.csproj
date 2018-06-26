@@ -42,10 +42,20 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Enums\GameState.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Game\MainGame.cs" />
+    <Compile Include="Models\AlienMissle.cs" />
+    <Compile Include="Models\AlienShip.cs" />
     <Compile Include="Models\GameObject.cs" />
+    <Compile Include="Models\MainMenu.cs" />
+    <Compile Include="Models\Menu.cs" />
+    <Compile Include="Models\MenuPointer.cs" />
+    <Compile Include="Models\Missile.cs" />
+    <Compile Include="Models\PlayerMissle.cs" />
     <Compile Include="Models\PlayerShip.cs" />
     <Compile Include="Models\Ship.cs" />
+    <Compile Include="Models\Wall.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -110,6 +120,7 @@
     </None>
     <None Include="app.manifest" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

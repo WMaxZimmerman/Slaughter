@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Game1.Game;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Game1.Models
@@ -7,8 +10,10 @@ namespace Game1.Models
     {
         public Texture2D Texture { get; set; }
         public Vector2 Position;
+        public int Layer { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
+        public bool IsRemoved { get; set; }
 
         private Vector2 InitialPos { get; }
 
@@ -20,6 +25,8 @@ namespace Game1.Models
 
             Height = texture.Height;
             Width = texture.Width;
+
+            Layer = 1;
         }
 
         public void MoveToInitialPos()
@@ -35,7 +42,12 @@ namespace Game1.Models
             return thisRect.Intersects(objRect);
         }
 
-        public virtual void Update(GameTime gameTime, ref int gameStart)
+        public virtual void Update(GameTime gameTime, ref int gameStart, List<GameObject> gameObjects)
+        {
+            //Can Be Overriden to do stuff.
+        }
+
+        public virtual void Update(GameTime gameTime, MainGame game)
         {
             //Can Be Overriden to do stuff.
         }
@@ -43,6 +55,11 @@ namespace Game1.Models
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, Position, Color.White);
+        }
+
+        public virtual void Destroy(MainGame game, GameObject sender)
+        {
+            IsRemoved = true;
         }
     }
 }
